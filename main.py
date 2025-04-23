@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from file_processor import *
 from message_parser import *
+from history_tracker import *
 
 class DivertMessage(BaseModel):
     Loc: str
@@ -56,6 +57,13 @@ def mawm_knapp_msg(message: Message):
 def mawm_ssi_msg(message: Message):
     try:
         return parse_ssi_message(message.message)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@app.post("/mhe/history")
+def mawm_history_msg(row_count: int):
+    try:
+        return retrieve_history(row_count)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     

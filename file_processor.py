@@ -3,6 +3,8 @@ import openpyxl
 import os
 
 from message_parser import *
+from history_tracker import *
+from MAWM_Connect import *
 
 # Function to parse the sheet name from the message
 # This function should be modified based on how the sheet name is represented in the message
@@ -73,7 +75,7 @@ def parse_dematic_message(message: str):
     if not (message.startswith(prefix) and message.endswith(suffix)):
         raise ValueError(f"Message must start with {prefix} and end with {suffix}: {message}")
 
-    #original_message = message
+    original_message = message
     message = message.strip()
     message = message[len(prefix):-len(suffix)].strip()
 
@@ -93,6 +95,9 @@ def parse_dematic_message(message: str):
 
     #Call parse_dematic_message instead of returning the vendor value
     parsed_message = message_Parser(fields, rows)
+
+    # Write the message and parsed_message to an Excel file
+    write_to_excel("Message_History.xlsx", original_message, parsed_message)
 
     #Return the parsed message
     return parsed_message
@@ -157,7 +162,14 @@ def parse_dematic_divert(inputDivertMessages):
 
     error_row_values = [row[0] for row in contErrorRows if len(row) > 0]
 
-    return {"result_string": result_string, "EventResult" : error_row_values }
+    endpointId = "OBPUTAWAY_IB_ENDPOINT_SRC"
+    response = invoke_mawm_dei(endpointId, result_string)
+
+    # Write the message and parsed_message to an Excel file
+    #write_to_excel("Message_History.xlsx", inputDivertMessages, response)
+
+    return (response)
+    #return {"result_string": result_string, "EventResult" : error_row_values }
     #return {"contdivertrows": contdivertrows, "contErrorRows": contErrorRows} 
 
  
