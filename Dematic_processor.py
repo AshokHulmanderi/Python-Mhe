@@ -6,26 +6,15 @@ from message_parser import *
 from history_tracker import *
 from MAWM_Connect import *
 
-# Function to parse the sheet name from the message
-# This function should be modified based on how the sheet name is represented in the message
-def parse_sheet_name(value: str) -> str:
-    """
-    Parses the sheet name from the given value.
-    Modify this logic based on your specific requirements.
-    """
-    if value:
-        return value.strip()  # Example: Strip any leading/trailing whitespace
-    return None
-
 
 # Function to process the appropriate vendor-specific file
 def parse_dematic_message(message: str):
 
-    file_path = "./Dematic_MHE.xlsx"
+    file_path = "./Mapping_Spec/Dematic_MHE.xlsx"
 
     # Check if the file exists
     if not os.path.exists(file_path):
-        return {"error": f"File not found for vendor 'Dematic'"}
+        return {"error": f"File not found for vendor 'Dematic' - {file_path}"}
     
     # Load the workbook and select the active sheet
     workbook = openpyxl.load_workbook(file_path)
@@ -97,7 +86,7 @@ def parse_dematic_message(message: str):
     parsed_message = message_Parser(fields, rows)
 
     # Write the message and parsed_message to an Excel file
-    write_to_excel("Message_History.xlsx", original_message, parsed_message)
+    write_to_excel("./History_Files/200_Message_History.xlsx", original_message, parsed_message)
 
     #Return the parsed message
     return parsed_message
@@ -106,7 +95,7 @@ def parse_dematic_message(message: str):
 # Function to process the appropriate vendor-specific file
 def parse_dematic_divert(inputDivertMessages):
 
-    file_path = "./Dematic_MHE.xlsx"
+    file_path = "./Mapping_Spec//Dematic_MHE.xlsx"
 
     # Check if the file exists
     if not os.path.exists(file_path):
@@ -171,84 +160,3 @@ def parse_dematic_divert(inputDivertMessages):
     return (response)
     #return {"result_string": result_string, "EventResult" : error_row_values }
     #return {"contdivertrows": contdivertrows, "contErrorRows": contErrorRows} 
-
- 
-
-
-def parse_knapp_message(message: str):
-
-    delimiter = "^"
-    prefix = "STX"
-    suffix = "ETX"
-
-    message = message.strip()
-
-    file_path = "./Knapp_MHE.xlsx"
-    # Validate prefix/suffix.
-    if not (message.startswith(prefix) and message.endswith(suffix)):
-        raise ValueError(f"Message must start with {prefix} and end with {suffix}: {message}")
-    
-    # Strip prefix/suffix.
-    content = message[len(prefix):-len(suffix)].strip()
-    fields = content.split(delimiter)
-
-    # Otherwise, continue to parse message.
-    response = {}
-
-    for i in range(0, len(fields), 2):
-        key = fields[i].strip()
-        value = fields[i + 1].strip()
-
-        # Validate if keyword is valid and is in the allowed list.
-        if key not in MHE_FIELDS_ALLOWED:
-            raise ValueError(f"Invalid keyword '{key}' found in message: {message}")
-
-        # Add to the response dictionary.
-        response[key] = value
-
-    # Validate if all required fields are present.
-    missing_fields = [field for field in MHE_FIELDS_REQUIRED if field not in response]
-    if missing_fields:
-        raise ValueError(f"Missing required fields: {', '.join(missing_fields)}")
-
-    return response
-
-
-def parse_ssi_message(message: str, delimiter: str = None, prefix: str = None, suffix: str = None) -> dict:
-
-    delimiter = "^"
-    prefix = "STX"
-    suffix = "ETX"
-
-    message = message.strip()
-
-    file_path = "./SSI_MHE.xlsx"
-
-    # Validate prefix/suffix.
-    if not (message.startswith(prefix) and message.endswith(suffix)):
-        raise ValueError(f"Message must start with {prefix} and end with {suffix}: {message}")
-    
-    # Strip prefix/suffix.
-    content = message[len(prefix):-len(suffix)].strip()
-    fields = content.split(delimiter)
-
-    # Otherwise, continue to parse message.
-    response = {}
-
-    for i in range(0, len(fields), 2):
-        key = fields[i].strip()
-        value = fields[i + 1].strip()
-
-        # Validate if keyword is valid and is in the allowed list.
-        if key not in MHE_FIELDS_ALLOWED:
-            raise ValueError(f"Invalid keyword '{key}' found in message: {message}")
-
-        # Add to the response dictionary.
-        response[key] = value
-
-    # Validate if all required fields are present.
-    missing_fields = [field for field in MHE_FIELDS_REQUIRED if field not in response]
-    if missing_fields:
-        raise ValueError(f"Missing required fields: {', '.join(missing_fields)}")
-
-    return response

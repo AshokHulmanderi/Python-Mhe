@@ -1,5 +1,17 @@
 # Sample Message Parser to compare and validate between the input and the excel file
 
+# Function to parse the sheet name from the message
+# This function should be modified based on how the sheet name is represented in the message
+def parse_sheet_name(value: str) -> str:
+    """
+    Parses the sheet name from the given value.
+    Modify this logic based on your specific requirements.
+    """
+    if value:
+        return value.strip()  # Example: Strip any leading/trailing whitespace
+    return None
+
+
 def message_Parser(fields, rows ) -> dict:
 
     # Initialize the response JSON array

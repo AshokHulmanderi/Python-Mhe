@@ -3,7 +3,9 @@ from typing import List
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 
-from file_processor import *
+from Dematic_processor import *
+from Knapp_processor import *
+from ssi_processor import *
 from message_parser import *
 from history_tracker import *
 
@@ -61,9 +63,16 @@ def mawm_ssi_msg(message: Message):
         raise HTTPException(status_code=400, detail=str(e))
     
 @app.post("/mhe/history")
-def mawm_history_msg(row_count: int):
+def mawm_history_msg(row_count: int, loc: str):
     try:
-        return retrieve_history(row_count)
+        return retrieve_history(row_count, loc)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
+@app.post("/mhe/history/clear")
+def clear_history(loc: str):
+    try:
+        return clear_history_file(loc)
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

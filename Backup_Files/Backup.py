@@ -139,3 +139,4 @@ def dematic_mawm_divert(divertMessages: DivertList):
     for divertMessage in divertMessages.Data:
         response[f"{divertMessage.OlpnId}"] = "Diverted to " + divertMessage.DivertLocation
     return response
+
