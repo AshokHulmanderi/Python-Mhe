@@ -7,7 +7,7 @@ from history_tracker import *
 from MAWM_Connect import *
 
 
-def parse_knapp_message(message: str):
+def parse_knapp_message(loc: str, message: str):
 
     delimiter = "^"
     prefix = "STX"

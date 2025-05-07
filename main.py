@@ -41,27 +41,7 @@ def dematic_mawm_divert(inputDivertMessages: DivertMessage):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/mhe/Dematic")
-def mawm_dematic_msg(message: Message):
-    try:
-        return parse_dematic_message(message.message)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-@app.post("/mhe/knapp")
-def mawm_knapp_msg(message: Message):
-    try:
-        return parse_knapp_message(message.message)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-@app.post("/mhe/ssi")
-def mawm_ssi_msg(message: Message):
-    try:
-        return parse_ssi_message(message.message)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    
+  
 @app.post("/mhe/history")
 def mawm_history_msg(row_count: int, loc: str):
     try:
@@ -76,3 +56,23 @@ def clear_history(loc: str):
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/mhe/Dematic")
+def mawm_dematic_msg(loc: str, message: Message):
+    try:
+        return parse_dematic_message(loc, message.message)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/mhe/knapp")
+def mawm_knapp_msg(loc: str, message: Message):
+    try:
+        return parse_knapp_message(loc, message.message)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/mhe/ssi")
+def mawm_ssi_msg(loc: str, message: Message):
+    try:
+        return parse_ssi_message(loc, message.message)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

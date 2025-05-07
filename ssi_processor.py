@@ -8,7 +8,7 @@ from MAWM_Connect import *
 
 
 
-def parse_ssi_message(message: str, delimiter: str = None, prefix: str = None, suffix: str = None) -> dict:
+def parse_ssi_message(loc: str, message: str, delimiter: str = None, prefix: str = None, suffix: str = None) -> dict:
 
 
     delimiter = "^"

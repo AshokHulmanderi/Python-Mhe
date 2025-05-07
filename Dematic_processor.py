@@ -8,7 +8,7 @@ from MAWM_Connect import *
 
 
 # Function to process the appropriate vendor-specific file
-def parse_dematic_message(message: str):
+def parse_dematic_message(loc: str, message: str):
 
     file_path = "./Mapping_Spec/Dematic_MHE.xlsx"
 
@@ -86,7 +86,8 @@ def parse_dematic_message(message: str):
     parsed_message = message_Parser(fields, rows)
 
     # Write the message and parsed_message to an Excel file
-    write_to_excel("./History_Files/200_Message_History.xlsx", original_message, parsed_message)
+    file_path = f"./History_Files/{loc}_Message_History.xlsx"
+    write_to_excel(file_path, original_message, parsed_message)
 
     #Return the parsed message
     return parsed_message
@@ -137,11 +138,21 @@ def parse_dematic_divert(inputDivertMessages):
     contdivertrows = contdivertrows[1:]  # Slicing to exclude the first row
     contErrorRows = contErrorRows[1:]  # Slicing to exclude the first row
 
+    event_result = inputDivertMessages.EventResult
+    error_row_values = [row[0] for row in contErrorRows if len(row) > 0]
+
+    if event_result not in error_row_values:
+        raise ValueError(f"EventResult '{event_result}' not found in container error rows.")
+    
      # Create a string based on the specified conditions
     result_string = ""
     for row in contdivertrows:
         if row[0] in inputDivertMessages:
             result_string += str(inputDivertMessages[row[0]])  # Use value from inputDivertMessages
+        elif str(row[0]) == "STX":
+           result_string += "<STX>"  # Default to value from column 1 (index 0) 
+        elif str(row[0]) == "ETX":
+           result_string += "<ETX>"
         else:
             result_string += str(row[3])  # Default to value from column 1 (index 0)
         result_string += "^"  # Add delimiter after each value
@@ -149,7 +160,7 @@ def parse_dematic_divert(inputDivertMessages):
     # Remove the trailing delimiter
     result_string = result_string.rstrip("^")
 
-    error_row_values = [row[0] for row in contErrorRows if len(row) > 0]
+    #error_row_values = [row[0] for row in contErrorRows if len(row) > 0]
 
     endpointId = "OBPUTAWAY_IB_ENDPOINT_SRC"
     response = invoke_mawm_dei(endpointId, result_string)
